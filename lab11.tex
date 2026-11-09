@@ -53,7 +53,8 @@ que es verdadera exactamente cuando la política permite la petición \cite{gace
 La charla es \emph{AWS re:Invent 2016: Automated Formal Reasoning About AWS Systems (SEC401)}, del canal Amazon Web Services, presentada por Byron Cook \cite{video}. El artículo del mismo expositor en CAV 2018 desarrolla lo que expone en la charla \cite{cook}. Ahí el razonamiento formal automatizado consiste en demostrar propiedades con probadores de teoremas y verificadores de modelos, y Cook afirma que da más garantías que el testing porque deja claro qué quedó asegurado y qué no; además se puede aplicar antes de escribir el código, demostrando los algoritmos y protocolos de alto nivel \cite{cook}. Uno de los ejemplos es una herramienta basada en SMT que razona sobre la semántica de las políticas para encontrar las que están mal configuradas, que es lo que hace Zelkova \cite{cook,gacek}.
 
 Cook separa una demostración en dos actividades: buscar una prueba candidata y verificarla. La búsqueda es ``el arte'' y suele combinar heurísticas que intentan rodear lo indecidible; la verificación normalmente es decidible y lineal en el tamaño de la prueba \cite{cook}. Esto conecta con el curso: el problema general no tiene algoritmo que siempre termine, pero comprobar una prueba dada sí, igual que en NP verificar un certificado es fácil aunque encontrarlo no lo sea.
-% TODO Sammy: 1-2 lineas del video
+
+En la charla, Cook arranca desde el modelo de seguridad compartida de AWS y plantea dos preguntas: qué es el razonamiento mecanizado en lógica matemática y qué está haciendo AWS en ese campo; de ahí el subtítulo, \emph{Securing Customers with Mathematical Logic} \cite{slides}.
 
 \section*{3. SMT}
 
@@ -178,8 +179,9 @@ La fórmula mezcla multiplicación entre variables y un cuantificador, el fragme
 \begin{thebibliography}{99}
 \bibitem{gacek} A. Gacek, ``Protect Sensitive Data in the Cloud with Automated Reasoning: Zelkova'', \emph{AWS Security Blog}, 20 de junio de 2018 (actualizado el 31 de enero de 2025). \url{https://aws.amazon.com/blogs/security/protect-sensitive-data-in-the-cloud-with-automated-reasoning-zelkova/}
 \bibitem{video} Amazon Web Services, ``AWS re:Invent 2016: Automated Formal Reasoning About AWS Systems (SEC401)'', YouTube. \url{https://www.youtube.com/watch?v=U40bWY6oVtU}
+\bibitem{slides} B. Cook, ``Automated Formal Reasoning About AWS Systems: Securing Customers with Mathematical Logic'', diapositivas, AWS re:Invent 2016 (SEC401), 29 de noviembre de 2016.
 \bibitem{cook} B. Cook, ``Formal Reasoning About the Security of Amazon Web Services'', en \emph{Computer Aided Verification (CAV 2018)}, LNCS, vol.~10981. Springer, 2018. doi:10.1007/978-3-319-96145-3\_3. \url{https://discovery.ucl.ac.uk/id/eprint/10075272/1/Cook2018_Chapter_FormalReasoningAboutTheSecurit.pdf}
-\bibitem{dpllt} R. Nieuwenhuis, A. Oliveras y C. Tinelli, ``Solving SAT and SAT Modulo Theories: From an Abstract Davis--Putnam--Logemann--Loveland Procedure to DPLL(T)'', \emph{Journal of the ACM}, vol.~53, no.~6, 2006. \url{https://homepage.cs.uiowa.edu/~tinelli/papers/NieOT-JACM-06.pdf}
+\bibitem{dpllt} R. Nieuwenhuis, A. Oliveras y C. Tinelli, ``Solving SAT and SAT Modulo Theories: From an Abstract Davis--Putnam--Logemann--Loveland Procedure to DPLL(T)'', \emph{Journal of the ACM}, vol.~53, no.~6, pp.~937--977, 2006. doi:10.1145/1217856.1217859. \url{https://homepage.cs.uiowa.edu/~tinelli/papers/NieOT-JACM-06.pdf}
 \bibitem{z3arith} Microsoft Research, ``Arithmetic'', \emph{Z3 Guide}. \url{https://microsoft.github.io/z3guide/docs/theories/Arithmetic}
 \bibitem{z3quant} Microsoft Research, ``Quantifiers'', \emph{Z3 Guide}. \url{https://microsoft.github.io/z3guide/docs/logic/Quantifiers}
 \bibitem{z3intro} Microsoft Research, ``Introduction'', \emph{Z3 Guide}. \url{https://microsoft.github.io/z3guide/docs/logic/intro}
