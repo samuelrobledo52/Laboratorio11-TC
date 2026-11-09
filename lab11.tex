@@ -40,56 +40,56 @@ Universidad del Valle de Guatemala, Teoría de la Computación, Laboratorio No.\
 
 \section*{1. Zelkova: SMT para un problema que en general es indecidible}
 
-Zelkova es un servicio interno de Amazon que analiza políticas de IAM, de S3 y de otros recursos \cite{gacek}. La pregunta que responde es si existe \emph{alguna} petición que la política permita y no debería. Como el espacio de peticiones es infinito (cuentas, IP, cadenas en un ARN), probar casos no da una respuesta completa: según el artículo, otras técnicas adivinan y prueban, mientras que Zelkova \emph{sabe} \cite{gacek}.
+Zelkova es un servicio interno de Amazon que analiza políticas de IAM, de S3 y de otros recursos (Gacek, 2018). La pregunta que responde es si existe \emph{alguna} petición que la política permita y no debería. Como el espacio de peticiones es infinito (cuentas, IP, cadenas en un ARN), probar casos no da una respuesta completa: según el artículo, otras técnicas adivinan y prueban, mientras que Zelkova \emph{sabe}.
 
-Para un programa arbitrario que decide accesos, esa pregunta choca con el teorema de Rice: toda propiedad no trivial del comportamiento de un programa es indecidible \cite{sipser}. Zelkova evita el problema porque no trata la política como un programa, sino que la traduce a una fórmula en un lenguaje restringido (cadenas, expresiones regulares, números, fechas, IP) que un solver SMT sí resuelve. Por ejemplo, una declaración con \texttt{NotPrincipal} se vuelve
+Para un programa arbitrario que decide accesos, esa pregunta choca con el teorema de Rice: toda propiedad no trivial del comportamiento de un programa es indecidible. Zelkova evita el problema porque no trata la política como un programa, sino que la traduce a una fórmula en un lenguaje restringido (cadenas, expresiones regulares, números, fechas, IP) que un solver SMT sí resuelve. Por ejemplo, una declaración con \texttt{NotPrincipal} se vuelve
 \[
 (\mathit{Resource} = \texttt{"arn:aws:s3:::test-bucket"}) \wedge (\mathit{Principal} \neq 111122223333),
 \]
-que es verdadera exactamente cuando la política permite la petición \cite{gacek}. El solver devuelve una prueba para todos los valores de las variables o un contraejemplo. En mi lectura, el SMT no ``resuelve lo indecidible'': el problema se reformula dentro de un fragmento lógico que sí es decidible, porque el lenguaje de políticas es mucho menos expresivo que un lenguaje de programación.
+que es verdadera exactamente cuando la política permite la petición. El solver devuelve una prueba para todos los valores de las variables o un contraejemplo. En mi lectura, el SMT no ``resuelve lo indecidible'': el problema se reformula dentro de un fragmento lógico que sí es decidible, porque el lenguaje de políticas es mucho menos expresivo que un lenguaje de programación.
 
 \section*{2. Video}
 
-La charla es \emph{AWS re:Invent 2016: Automated Formal Reasoning About AWS Systems (SEC401)}, del canal Amazon Web Services, presentada por Byron Cook \cite{video}. El artículo del mismo expositor en CAV 2018 desarrolla lo que expone en la charla \cite{cook}. Ahí el razonamiento formal automatizado consiste en demostrar propiedades con probadores de teoremas y verificadores de modelos, y Cook afirma que da más garantías que el testing porque deja claro qué quedó asegurado y qué no; además se puede aplicar antes de escribir el código, demostrando los algoritmos y protocolos de alto nivel \cite{cook}. Uno de los ejemplos es una herramienta basada en SMT que razona sobre la semántica de las políticas para encontrar las que están mal configuradas, que es lo que hace Zelkova \cite{cook,gacek}.
+La charla es \emph{AWS re:Invent 2016: Automated Formal Reasoning About AWS Systems (SEC401)}, del canal Amazon Web Services, presentada por Byron Cook (Amazon Web Services, s.~f.). El artículo del mismo expositor en CAV 2018 desarrolla lo que expone en la charla (Cook, 2018). Ahí el razonamiento formal automatizado consiste en demostrar propiedades con probadores de teoremas y verificadores de modelos, y Cook afirma que da más garantías que el testing porque deja claro qué quedó asegurado y qué no; además se puede aplicar antes de escribir el código, demostrando los algoritmos y protocolos de alto nivel. Uno de los ejemplos es una herramienta basada en SMT que razona sobre la semántica de las políticas para encontrar las que están mal configuradas, que es lo que hace Zelkova (Gacek, 2018).
 
-Cook separa una demostración en dos actividades: buscar una prueba candidata y verificarla. La búsqueda es ``el arte'' y suele combinar heurísticas que intentan rodear lo indecidible; la verificación normalmente es decidible y lineal en el tamaño de la prueba \cite{cook}. Esto conecta con el curso: el problema general no tiene algoritmo que siempre termine, pero comprobar una prueba dada sí, igual que en NP verificar un certificado es fácil aunque encontrarlo no lo sea.
+Cook separa una demostración en dos actividades: buscar una prueba candidata y verificarla. La búsqueda es ``el arte'' y suele combinar heurísticas que intentan rodear lo indecidible; la verificación normalmente es decidible y lineal en el tamaño de la prueba. Esto conecta con el curso: el problema general no tiene algoritmo que siempre termine, pero comprobar una prueba dada sí, igual que en NP verificar un certificado es fácil aunque encontrarlo no lo sea.
 
-En la charla, Cook arranca desde el modelo de seguridad compartida de AWS y plantea dos preguntas: qué es el razonamiento mecanizado en lógica matemática y qué está haciendo AWS en ese campo; de ahí el subtítulo, \emph{Securing Customers with Mathematical Logic} \cite{slides}.
+En la charla, Cook (2016) arranca desde el modelo de seguridad compartida de AWS y plantea dos preguntas: qué es el razonamiento mecanizado en lógica matemática y qué está haciendo AWS en ese campo; de ahí el subtítulo, \emph{Securing Customers with Mathematical Logic}.
 
 \section*{3. SMT}
 
 \subsection*{a. ¿Qué es un SMT?}
 
-SMT (\emph{Satisfiability Modulo Theories}) es el problema de decidir si una fórmula es satisfacible cuando algunos símbolos tienen un significado fijo dado por una teoría de fondo: aritmética entera o real, bit-vectors, arreglos, cadenas. Extiende SAT, donde todo es booleano: en SMT un átomo puede ser $x + y > 3$. Un enfoque eficiente es DPLL($T$): un motor DPLL resuelve la parte booleana y coopera con un solver especializado para la teoría $T$ \cite{dpllt}.
+SMT (\emph{Satisfiability Modulo Theories}) es el problema de decidir si una fórmula es satisfacible cuando algunos símbolos tienen un significado fijo dado por una teoría de fondo: aritmética entera o real, bit-vectors, arreglos, cadenas. Extiende SAT, donde todo es booleano: en SMT un átomo puede ser $x + y > 3$. Un enfoque eficiente es DPLL($T$): un motor DPLL resuelve la parte booleana y coopera con un solver especializado para la teoría $T$ (Nieuwenhuis et~al., 2006).
 
-Relación con el curso: SAT es NP-completo por el teorema de Cook-Levin \cite{sipser}, así que SMT es al menos igual de difícil. Algunas teorías son indecidibles: para la aritmética entera no lineal no hay procedimiento que siempre termine con \texttt{sat} o \texttt{unsat}, y \texttt{check-sat} puede dar \texttt{unknown} o no terminar \cite{z3arith}; con cuantificadores tampoco hay procedimiento de decisión general \cite{z3quant}. En cambio, la aritmética lineal sí se decide (simplex dual para reales; cortes y \emph{branch and bound} para enteros) \cite{z3arith}. Por eso los solvers trabajan sobre fragmentos decidibles y usan heurísticas para el resto.
+Relación con el curso: SAT es NP-completo por el teorema de Cook-Levin (Sipser, 2013), así que SMT es al menos igual de difícil. Algunas teorías son indecidibles: para la aritmética entera no lineal no hay procedimiento que siempre termine con \texttt{sat} o \texttt{unsat}, y \texttt{check-sat} puede dar \texttt{unknown} o no terminar (Microsoft Research, s.~f.-a); con cuantificadores tampoco hay procedimiento de decisión general (Microsoft Research, s.~f.-d). En cambio, la aritmética lineal sí se decide (simplex dual para reales; cortes y \emph{branch and bound} para enteros). Por eso los solvers trabajan sobre fragmentos decidibles y usan heurísticas para el resto.
 
 \subsection*{b. ¿Cómo usa AWS los SMT para analizar políticas?}
 
-Zelkova traduce cada política a una fórmula y prueba teoremas sobre ella con solvers SMT \cite{gacek}. Hace dos preguntas:
+Zelkova traduce cada política a una fórmula y prueba teoremas sobre ella con solvers SMT (Gacek, 2018). Hace dos preguntas:
 \begin{itemize}[nosep]
   \item \textbf{¿$P_1$ es menos permisiva que $P_2$?} Si $P_1 \Rightarrow P_2$ es válida y $P_2 \Rightarrow P_1$ no, $P_1$ es estrictamente menos permisiva.
   \item \textbf{¿Permite acceso público?} Compara la política con una que deja entrar a usuarios anónimos. Si es más permisiva que esa, hay acceso público; condiciones como \texttt{aws:SourceIp} o \texttt{aws:SourceVpce} lo impiden.
 \end{itemize}
-Según \cite{gacek}, lo usan IAM Access Analyzer for S3, reglas administradas de AWS Config (como \texttt{s3-bucket-public-read-prohibited}), Amazon Macie y Amazon GuardDuty.
+Según el mismo artículo, lo usan IAM Access Analyzer for S3, reglas administradas de AWS Config (como \texttt{s3-bucket-public-read-prohibited}), Amazon Macie y Amazon GuardDuty.
 
 \subsection*{c. Otros usos de SMT solvers en la industria}
 
 \begin{enumerate}[nosep]
-  \item \textbf{SAGE (Microsoft), fuzzing de caja blanca.} Registra las condiciones de las ramas que toma una ejecución, niega una por una y le pide a Z3 una entrada que siga otro camino. Encontró cerca de un tercio de los bugs hallados por \emph{file fuzzing} en el desarrollo de Windows 7 \cite{sage}.
-  \item \textbf{KLEE, generación automática de pruebas.} Ejecuta con entradas simbólicas y usa el solver STP para decidir qué ramas son posibles y generar casos concretos. Alcanzó más de 90\,\% de cobertura promedio en las 89 utilidades de GNU Coreutils y encontró 56 bugs serios en 452 aplicaciones \cite{klee}.
-  \item \textbf{SLAM / Static Driver Verifier (Microsoft).} SDV analiza el código de drivers en modo kernel de Windows y Microsoft lo usó con los drivers del sistema \cite{sdv}. Su motor es SLAM, y SLAM2 evalúa predicados sobre punteros con Z3 \cite{slam,slam2z3}.
+  \item \textbf{SAGE (Microsoft), fuzzing de caja blanca.} Registra las condiciones de las ramas que toma una ejecución, niega una por una y le pide a Z3 una entrada que siga otro camino. Encontró cerca de un tercio de los bugs hallados por \emph{file fuzzing} en el desarrollo de Windows 7 (Godefroid et~al., 2012).
+  \item \textbf{KLEE, generación automática de pruebas.} Ejecuta con entradas simbólicas y usa el solver STP para decidir qué ramas son posibles y generar casos concretos. Alcanzó más de 90\,\% de cobertura promedio en las 89 utilidades de GNU Coreutils y encontró 56 bugs serios en 452 aplicaciones (Cadar et~al., 2008).
+  \item \textbf{SLAM / Static Driver Verifier (Microsoft).} SDV analiza el código de drivers en modo kernel de Windows y Microsoft lo usó con los drivers del sistema (Microsoft, s.~f.). Su motor es SLAM, y SLAM2 evalúa predicados sobre punteros con Z3 (Ball et~al., 2010; Microsoft Research, s.~f.-e).
 \end{enumerate}
 
 \section*{4. Programación funcional}
 
 \subsection*{a. ¿Qué es la programación funcional?}
 
-Es un paradigma donde un programa se arma componiendo funciones matemáticas: la salida depende solo de la entrada, sin efectos secundarios ni estado mutable. Se escriben expresiones que se evalúan en vez de instrucciones que modifican variables; las funciones son valores de primera clase, se usa recursión en lugar de ciclos y funciones de orden superior como \texttt{map} y \texttt{fold} \cite{hudak}.
+Es un paradigma donde un programa se arma componiendo funciones matemáticas: la salida depende solo de la entrada, sin efectos secundarios ni estado mutable. Se escriben expresiones que se evalúan en vez de instrucciones que modifican variables; las funciones son valores de primera clase, se usa recursión en lugar de ciclos y funciones de orden superior como \texttt{map} y \texttt{fold} (Hudak, 1989).
 
 \subsection*{b. Relación con el cálculo lambda y las máquinas de Turing}
 
-El cálculo lambda es su base teórica: solo hay variables, abstracciones $\lambda x.\,M$ y aplicaciones $M\,N$, y el paso de cómputo central es la reducción beta, $(\lambda x.\,M)\,N \to_\beta M[x := N]$ \cite{hudak}. Un lenguaje funcional es, en el fondo, cálculo lambda con tipos y azúcar sintáctica.
+El cálculo lambda es su base teórica: solo hay variables, abstracciones $\lambda x.\,M$ y aplicaciones $M\,N$, y el paso de cómputo central es la reducción beta, $(\lambda x.\,M)\,N \to_\beta M[x := N]$ (Hudak, 1989). Un lenguaje funcional es, en el fondo, cálculo lambda con tipos y azúcar sintáctica.
 
 Ejemplo con numerales de Church, donde $\underline{n} = \lambda f.\,\lambda x.\,f^{\,n}(x)$ y $\mathit{succ} = \lambda n.\,\lambda f.\,\lambda x.\,f\,(n\,f\,x)$:
 \begin{align*}
@@ -101,7 +101,7 @@ Ejemplo con numerales de Church, donde $\underline{n} = \lambda f.\,\lambda x.\,
 \end{align*}
 Solo con sustituciones se obtiene el sucesor.
 
-Turing demostró que las funciones $\lambda$-definibles son exactamente las computables por sus máquinas \cite{turing37}. La tesis de Church-Turing usa esa equivalencia como puente: lo que es calculable por un algoritmo lo calcula una máquina de Turing o, igualmente, el cálculo lambda \cite{sipser}. La máquina de Turing modela el cómputo como cambios de estado en una cinta (estilo imperativo) y el cálculo lambda como reescritura de expresiones (estilo funcional); por eso un lenguaje funcional es Turing-completo aunque no tenga asignación.
+Turing (1937) demostró que las funciones $\lambda$-definibles son exactamente las computables por sus máquinas. La tesis de Church-Turing usa esa equivalencia como puente: lo que es calculable por un algoritmo lo calcula una máquina de Turing o, igualmente, el cálculo lambda. La máquina de Turing modela el cómputo como cambios de estado en una cinta (estilo imperativo) y el cálculo lambda como reescritura de expresiones (estilo funcional); por eso un lenguaje funcional es Turing-completo aunque no tenga asignación.
 
 \subsection*{c. Cinco lenguajes funcionales}
 
@@ -115,7 +115,7 @@ Turing demostró que las funciones $\lambda$-definibles son exactamente las comp
 
 \section*{5. Z3}
 
-Z3 es un probador de teoremas de Microsoft Research que revisa la satisfacibilidad de fórmulas sobre una o más teorías \cite{z3intro}. Los archivos también corren en el playground \cite{z3play}, pero las salidas de abajo son de una ejecución local con \texttt{z3-solver} instalado en un entorno virtual dentro de \texttt{lab11}:
+Z3 es un probador de teoremas de Microsoft Research que revisa la satisfacibilidad de fórmulas sobre una o más teorías (Microsoft Research, s.~f.-b). Los archivos también corren en el playground (\emph{Z3 Playground}, s.~f.), pero las salidas de abajo son de una ejecución local con \texttt{z3-solver} instalado en un entorno virtual dentro de \texttt{lab11}:
 \begin{lstlisting}[basicstyle=\ttfamily\footnotesize]
 > .venv\bin\z3.exe --version
 Z3 version 5.3.3 - 64 bit - build hashcode 430d19e697e2ec9bad79ff210d41b4a7a5fcfa3e
@@ -123,7 +123,7 @@ Z3 version 5.3.3 - 64 bit - build hashcode 430d19e697e2ec9bad79ff210d41b4a7a5fcf
 
 \subsection*{d. ¿Cómo se prueba con Z3 que una fórmula es siempre válida?}
 
-Z3 responde satisfacibilidad, así que se usa que $F$ es válida si y solo si $\neg F$ es insatisfacible \cite{z3prop}. Se hace \texttt{(assert (not F))} y \texttt{(check-sat)}: \texttt{unsat} significa que $F$ es válida; \texttt{sat} significa que hay una asignación que la hace falsa, y \texttt{(get-model)} la muestra como contraejemplo.
+Z3 responde satisfacibilidad, así que se usa que $F$ es válida si y solo si $\neg F$ es insatisfacible (Microsoft Research, s.~f.-c). Se hace \texttt{(assert (not F))} y \texttt{(check-sat)}: \texttt{unsat} significa que $F$ es válida; \texttt{sat} significa que hay una asignación que la hace falsa, y \texttt{(get-model)} la muestra como contraejemplo.
 
 \textbf{Caso válido}, De Morgan: $\neg(a \wedge b) \leftrightarrow (\neg a \vee \neg b)$.
 \lstinputlisting[title={\texttt{validez\_demorgan.smt2}}]{z3/validez_demorgan.smt2}
@@ -174,28 +174,31 @@ Dan \texttt{sat} exactamente $2, 3, 5, 7, 11, 13, 17, 19$; el resto da \texttt{u
 \]
 es decir, $x > 1$ y $x$ no es producto de dos enteros estrictamente entre 1 y $x$. Esa es la definición de primo. Por ejemplo, con $x = 1$ falla $x > 1$; con $x = 4$ existen $y = z = 2$, así que el $\exists$ es verdadero y da \texttt{unsat}; con $x = 11$ ningún par sirve y da \texttt{sat}. Entonces $\mathit{mistery}(x)$ es verdadero si y solo si $x$ es primo.
 
-La fórmula mezcla multiplicación entre variables y un cuantificador, el fragmento que la guía de Z3 marca como indecidible en general \cite{z3arith,z3quant}. Aquí funciona porque $x$ es constante y las cotas $1 < y, z < x$ dejan un número finito de candidatos.
+La fórmula mezcla multiplicación entre variables y un cuantificador, el fragmento que la guía de Z3 marca como indecidible en general (Microsoft Research, s.~f.-a, s.~f.-d). Aquí funciona porque $x$ es constante y las cotas $1 < y, z < x$ dejan un número finito de candidatos.
 
-\begin{thebibliography}{99}
-\bibitem{gacek} A. Gacek, ``Protect Sensitive Data in the Cloud with Automated Reasoning: Zelkova'', \emph{AWS Security Blog}, 20 de junio de 2018 (actualizado el 31 de enero de 2025). \url{https://aws.amazon.com/blogs/security/protect-sensitive-data-in-the-cloud-with-automated-reasoning-zelkova/}
-\bibitem{video} Amazon Web Services, ``AWS re:Invent 2016: Automated Formal Reasoning About AWS Systems (SEC401)'', YouTube. \url{https://www.youtube.com/watch?v=U40bWY6oVtU}
-\bibitem{slides} B. Cook, ``Automated Formal Reasoning About AWS Systems: Securing Customers with Mathematical Logic'', diapositivas, AWS re:Invent 2016 (SEC401), 29 de noviembre de 2016.
-\bibitem{cook} B. Cook, ``Formal Reasoning About the Security of Amazon Web Services'', en \emph{Computer Aided Verification (CAV 2018)}, LNCS, vol.~10981. Springer, 2018. doi:10.1007/978-3-319-96145-3\_3. \url{https://discovery.ucl.ac.uk/id/eprint/10075272/1/Cook2018_Chapter_FormalReasoningAboutTheSecurit.pdf}
-\bibitem{dpllt} R. Nieuwenhuis, A. Oliveras y C. Tinelli, ``Solving SAT and SAT Modulo Theories: From an Abstract Davis--Putnam--Logemann--Loveland Procedure to DPLL(T)'', \emph{Journal of the ACM}, vol.~53, no.~6, pp.~937--977, 2006. doi:10.1145/1217856.1217859. \url{https://homepage.cs.uiowa.edu/~tinelli/papers/NieOT-JACM-06.pdf}
-\bibitem{z3arith} Microsoft Research, ``Arithmetic'', \emph{Z3 Guide}. \url{https://microsoft.github.io/z3guide/docs/theories/Arithmetic}
-\bibitem{z3quant} Microsoft Research, ``Quantifiers'', \emph{Z3 Guide}. \url{https://microsoft.github.io/z3guide/docs/logic/Quantifiers}
-\bibitem{z3intro} Microsoft Research, ``Introduction'', \emph{Z3 Guide}. \url{https://microsoft.github.io/z3guide/docs/logic/intro}
-\bibitem{z3prop} Microsoft Research, ``Propositional Logic: Satisfiability and Validity'', \emph{Z3 Guide}. \url{https://microsoft.github.io/z3guide/docs/logic/propositional-logic}
-\bibitem{z3play} Z3 Playground. \url{https://jfmc.github.io/z3-play/}
-\bibitem{sage} P. Godefroid, M. Y. Levin y D. Molnar, ``SAGE: Whitebox Fuzzing for Security Testing'', \emph{Communications of the ACM}, vol.~55, no.~3, 2012. doi:10.1145/2093548.2093564
-\bibitem{klee} C. Cadar, D. Dunbar y D. Engler, ``KLEE: Unassisted and Automatic Generation of High-Coverage Tests for Complex Systems Programs'', en \emph{8th USENIX Symposium on Operating Systems Design and Implementation (OSDI 08)}, San Diego, 2008. \url{https://www.usenix.org/legacy/event/osdi08/tech/full_papers/cadar/cadar.pdf}
-\bibitem{sdv} Microsoft, ``Static Driver Verifier'', \emph{Microsoft Learn}. \url{https://learn.microsoft.com/en-us/windows-hardware/drivers/devtest/static-driver-verifier}
-\bibitem{slam} Microsoft Research, ``SLAM''. \url{https://www.microsoft.com/en-us/research/project/slam/}
-\bibitem{slam2z3} T. Ball, E. Bounimova, V. Levin y L. de Moura, ``Efficient evaluation of pointer predicates with Z3 SMT Solver in SLAM2'', Microsoft Research, MSR-TR-2010-24, 2010.
-\bibitem{hudak} P. Hudak, ``Conception, evolution, and application of functional programming languages'', \emph{ACM Computing Surveys}, vol.~21, no.~3, pp.~359--411, 1989.
-\bibitem{turing37} A. M. Turing, ``Computability and $\lambda$-definability'', \emph{The Journal of Symbolic Logic}, vol.~2, no.~4, pp.~153--163, 1937.
-\bibitem{sipser} M. Sipser, \emph{Introduction to the Theory of Computation}, 3.ª ed. Cengage Learning, 2013.
-\end{thebibliography}
+\section*{Referencias}
+
+\begin{list}{}{\setlength{\leftmargin}{1.27cm}\setlength{\itemindent}{-1.27cm}\setlength{\itemsep}{4pt}\setlength{\parsep}{0pt}}
+\raggedright
+\item Amazon Web Services. (s.~f.). \emph{AWS re:Invent 2016: Automated formal reasoning about AWS systems (SEC401)} [Video]. YouTube. \url{https://www.youtube.com/watch?v=U40bWY6oVtU}
+\item Ball, T., Bounimova, E., Levin, V., y de Moura, L. (2010). \emph{Efficient evaluation of pointer predicates with Z3 SMT solver in SLAM2} (Informe técnico MSR-TR-2010-24). Microsoft Research.
+\item Cadar, C., Dunbar, D., y Engler, D. (2008). KLEE: Unassisted and automatic generation of high-coverage tests for complex systems programs. En \emph{8th USENIX Symposium on Operating Systems Design and Implementation (OSDI 08)}. USENIX Association. \url{https://www.usenix.org/legacy/event/osdi08/tech/full_papers/cadar/cadar.pdf}
+\item Cook, B. (2016, 29 de noviembre). \emph{Automated formal reasoning about AWS systems: Securing customers with mathematical logic} [Diapositivas]. AWS re:Invent 2016 (SEC401).
+\item Cook, B. (2018). Formal reasoning about the security of Amazon Web Services. En \emph{Computer Aided Verification (CAV 2018)} (Lecture Notes in Computer Science, Vol.~10981). Springer. \url{https://doi.org/10.1007/978-3-319-96145-3_3}
+\item Gacek, A. (2018, 20 de junio). Protect sensitive data in the cloud with automated reasoning: Zelkova. \emph{AWS Security Blog}. \url{https://aws.amazon.com/blogs/security/protect-sensitive-data-in-the-cloud-with-automated-reasoning-zelkova/}
+\item Godefroid, P., Levin, M. Y., y Molnar, D. (2012). SAGE: Whitebox fuzzing for security testing. \emph{Communications of the ACM, 55}(3). \url{https://doi.org/10.1145/2093548.2093564}
+\item Hudak, P. (1989). Conception, evolution, and application of functional programming languages. \emph{ACM Computing Surveys, 21}(3), 359--411.
+\item Microsoft. (s.~f.). \emph{Static Driver Verifier}. Microsoft Learn. \url{https://learn.microsoft.com/en-us/windows-hardware/drivers/devtest/static-driver-verifier}
+\item Microsoft Research. (s.~f.-a). \emph{Arithmetic}. Z3 Guide. \url{https://microsoft.github.io/z3guide/docs/theories/Arithmetic}
+\item Microsoft Research. (s.~f.-b). \emph{Introduction}. Z3 Guide. \url{https://microsoft.github.io/z3guide/docs/logic/intro}
+\item Microsoft Research. (s.~f.-c). \emph{Propositional logic: Satisfiability and validity}. Z3 Guide. \url{https://microsoft.github.io/z3guide/docs/logic/propositional-logic}
+\item Microsoft Research. (s.~f.-d). \emph{Quantifiers}. Z3 Guide. \url{https://microsoft.github.io/z3guide/docs/logic/Quantifiers}
+\item Microsoft Research. (s.~f.-e). \emph{SLAM}. \url{https://www.microsoft.com/en-us/research/project/slam/}
+\item Nieuwenhuis, R., Oliveras, A., y Tinelli, C. (2006). Solving SAT and SAT modulo theories: From an abstract Davis--Putnam--Logemann--Loveland procedure to DPLL(T). \emph{Journal of the ACM, 53}(6), 937--977. \url{https://doi.org/10.1145/1217856.1217859}
+\item Sipser, M. (2013). \emph{Introduction to the theory of computation} (3.ª ed.). Cengage Learning.
+\item Turing, A. M. (1937). Computability and $\lambda$-definability. \emph{The Journal of Symbolic Logic, 2}(4), 153--163.
+\item \emph{Z3 Playground}. (s.~f.). \url{https://jfmc.github.io/z3-play/}
+\end{list}
 
 {\renewcommand{\thefootnote}{}\footnotetext{Se utilizó Claude para la revisión y corrección; el trabajo fue revisado y realizado por mí.}}
 
