@@ -1,0 +1,22 @@
+x  | resultado
+---+----------
+1  | unsat
+2  | sat
+3  | sat
+4  | unsat
+5  | sat
+6  | unsat
+7  | sat
+8  | unsat
+9  | unsat
+10 | unsat
+11 | sat
+12 | unsat
+13 | sat
+14 | unsat
+15 | unsat
+16 | unsat
+17 | sat
+18 | unsat
+19 | sat
+20 | unsat
